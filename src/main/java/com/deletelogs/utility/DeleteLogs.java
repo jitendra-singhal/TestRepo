@@ -9,17 +9,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class DeleteLogs {
 	
-	@Value("${cutoffdays}")
+	@Value("${cutoff.days}")
 	private int cutOffDays;	
 	
-	@Scheduled(cron = "* * * * * *")
+	@Scheduled(cron = "0 */1 * * * *")
 	public void deleteLogs() {
 	String [] folders = {"C:\\Temp\\logs"}; 
 	
 	long cutOffDate = System.currentTimeMillis() - (cutOffDays * 24 *60 * 60 * 1000);
-	
+	System.out.println("cutOffDate : "+cutOffDate);
 	for(String folderPath : folders) {
+		System.out.println("running cron job to delete files in : "+ folderPath);
 		deleteFilesOlderThan(new File(folderPath), cutOffDate);
+		System.out.println("job completed for folder : "+ folderPath);
+		
 	}
 	}
 
@@ -32,6 +35,7 @@ public class DeleteLogs {
 	                      deleteFilesOlderThan(file, cutoffDate);
 	                  } else {
 	                      long lastModified = file.lastModified();
+	                      System.out.println("file date :"+lastModified);
 	                      if (lastModified < cutoffDate) {
 	                          boolean deleted = file.delete();
 	                          if (deleted) {
